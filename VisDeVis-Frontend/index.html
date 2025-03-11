@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisDeVis - Evenimente</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <header>
+        <img src="logo.png" alt="VisDeVis Logo" class="logo">
+        <h1>VisDeVis - Petreceri Exclusive</h1>
+        <nav>
+            <ul>
+                <li><a href="#evenimente">Evenimente</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section id="evenimente">
+        <h2>Evenimente Viitoare</h2>
+        <div class="eveniment">
+            <img src="event1.jpg" alt="Eveniment 1">
+            <h3>Petrecere Specială - Viena</h3>
+            <p>Data: 20 Aprilie 2025</p>
+            <p>Locație: Club XYZ, Viena</p>
+            <button class="buy-button" data-event="Petrecere Specială - Viena">Cumpără Bilet</button>
+        </div>
+    </section>
+    
+    <section id="contact">
+        <h2>Contact</h2>
+        <p>Email: contact@visdevis.at</p>
+        <p>Telefon: +43 123 456 789</p>
+    </section>
+    
+    <footer>
+        <p>&copy; 2025 VisDeVis. Toate drepturile rezervate.</p>
+    </footer>
+
+    <script>
+        var stripe = Stripe('pk_test_YOUR_PUBLIC_KEY_HERE');
+        
+        document.querySelectorAll('.buy-button').forEach(button => {
+            button.addEventListener('click', function () {
+                fetch('https://visdevis-backend.railway.app/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        event: this.getAttribute('data-event'),
+                        email: prompt("Introdu adresa ta de email pentru bilet:")
+                    })
+                })
+                .then(response => response.json())
+                .then(session => {
+                    return stripe.redirectToCheckout({ sessionId: session.id });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
